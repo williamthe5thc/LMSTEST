@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Coaching - Learning Management System</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <!-- Navigation (only shown when authenticated) -->
+    <nav class="navbar hidden" id="mainNav">
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="redirectToDashboard(); return false;">
+                <div class="logo-icon">C</div>
+                Connection Coaching
+            </a>
+            <div class="user-menu">
+                <span id="userRole" style="color: var(--text-light); margin-right: 1rem;"></span>
+                <span id="userName" style="font-weight: 600;"></span>
+                <button class="btn btn-outline" onclick="logout()" style="margin-left: 1rem;">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div id="app-content"></div>
+
+    <!-- Scripts - Order matters! -->
+    <script src="js/data.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/modals.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/dashboards/admin.js"></script>
+    <script src="js/dashboards/staff.js"></script>
+    <script src="js/dashboards/coach.js"></script>
+    <script src="js/dashboards/parent.js"></script>
+    <script src="js/dashboards/teen.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
