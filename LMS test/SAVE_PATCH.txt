@@ -1,0 +1,157 @@
+// Patch for modals.js - adds saveAllData() calls
+
+// After adding/editing users
+function handleAddUser(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const userData = {
+        id: `user${Date.now()}`,
+        name: formData.get('name'),
+        email: formData.get('email'),
+        password: formData.get('password'),
+        role: formData.get('role'),
+        status: 'active',
+        joinDate: new Date().toISOString().split('T')[0]
+    };
+
+    allUsers.push(userData);
+    sampleUsers.push(userData);
+    saveAllData(); // ADDED
+
+    closeModal();
+    showSuccess(`User ${userData.name} added successfully and saved!`);
+
+    if (currentUser && currentUser.role === 'admin') {
+        const adminContent = document.getElementById('adminContent');
+        if (adminContent) {
+            loadAdminUsers(adminContent);
+        }
+    }
+}
+
+function handleEditUser(event, userId) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    
+    const userIndex = allUsers.findIndex(u => u.id == userId);
+    if (userIndex !== -1) {
+        allUsers[userIndex].name = formData.get('name');
+        allUsers[userIndex].email = formData.get('email');
+        allUsers[userIndex].role = formData.get('role');
+        allUsers[userIndex].status = formData.get('status');
+    }
+
+    const sampleIndex = sampleUsers.findIndex(u => u.id == userId);
+    if (sampleIndex !== -1) {
+        sampleUsers[sampleIndex].name = formData.get('name');
+        sampleUsers[sampleIndex].email = formData.get('email');
+        sampleUsers[sampleIndex].role = formData.get('role');
+    }
+
+    saveAllData(); // ADDED
+
+    closeModal();
+    showSuccess('User updated and saved successfully!');
+
+    if (currentUser && currentUser.role === 'admin') {
+        const adminContent = document.getElementById('adminContent');
+        if (adminContent) {
+            loadAdminUsers(adminContent);
+        }
+    }
+}
+
+function handleCreateProgram(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    
+    const newProgram = {
+        id: programs.length + 1,
+        title: formData.get('title'),
+        description: formData.get('description'),
+        duration: formData.get('duration'),
+        sessions: parseInt(formData.get('sessions')),
+        category: formData.get('category'),
+        content: '',
+        activities: [],
+        assessment: { questions: [], passingScore: 70 }
+    };
+
+    programs.push(newProgram);
+    saveAllData(); // ADDED
+
+    closeModal();
+    showSuccess(`Program "${newProgram.title}" created and saved successfully!`);
+
+    if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'staff')) {
+        const content = currentUser.role === 'admin' 
+            ? document.getElementById('adminContent')
+            : document.getElementById('staffContent');
+        if (content) {
+            if (currentUser.role === 'admin') {
+                loadAdminPrograms(content);
+            } else {
+                loadStaffPrograms(content);
+            }
+        }
+    }
+}
+
+function handleScheduleSession(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    
+    const timeValue = formData.get('time');
+    const [hours, minutes] = timeValue.split(':');
+    const ampm = parseInt(hours) >= 12 ? 'PM' : 'AM';
+    const displayHours = parseInt(hours) % 12 || 12;
+    const displayTime = `${displayHours}:${minutes} ${ampm}`;
+
+    const newSession = {
+        id: sessions.length + 1,
+        date: formData.get('date'),
+        time: displayTime,
+        duration: formData.get('duration'),
+        coach: currentUser.name,
+        teen: formData.get('student'),
+        type: formData.get('type'),
+        status: 'scheduled',
+        notes: ''
+    };
+
+    sessions.unshift(newSession);
+    saveAllData(); // ADDED
+
+    closeModal();
+    showSuccess('Session scheduled and saved successfully!');
+
+    if (currentUser && currentUser.role === 'coach') {
+        const coachContent = document.getElementById('coachContent');
+        if (coachContent) {
+            loadCoachSessions(coachContent);
+        }
+    }
+}
+
+function handleSaveSessionNotes(event, sessionId) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const notes = formData.get('notes');
+
+    const sessionIndex = sessions.findIndex(s => s.id === sessionId);
+    if (sessionIndex !== -1) {
+        sessions[sessionIndex].notes = notes;
+    }
+
+    saveAllData(); // ADDED
+
+    closeModal();
+    showSuccess('Session notes saved successfully!');
+
+    if (currentUser && currentUser.role === 'coach') {
+        const coachContent = document.getElementById('coachContent');
+        if (coachContent) {
+            loadCoachNotes(coachContent);
+        }
+    }
+}
